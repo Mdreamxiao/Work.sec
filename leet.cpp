@@ -1,5 +1,5 @@
 //***********************************Leet Recorder***********************************//
-
+// 1 解法用到的知识点加个备注，以便寻找及总结。  递归
 
 147 Insertion Sort List
 Sort a linked list using insertion sort.
@@ -172,6 +172,7 @@ Explanation:
 
 
 // discuss
+// map使用
 class Solution {
 public:
     int evalRPN(vector<string>& tokens) {
@@ -198,6 +199,7 @@ public:
 };
 
 
+// 对-33能处理吗
 int evalRPN(vector<string>& tokens) {
     stack<int> stn;
     for(auto s:tokens) {
@@ -217,7 +219,8 @@ int evalRPN(vector<string>& tokens) {
     return stn.top();
 }
 
-
+// 递归
+// 抓住了一个关键点：连续两个都是数才会进行运算！
 int evalRPN(vector<string>& tokens) {
         string s = tokens.back(); tokens.pop_back();
         if(s != "+" && s != "-" && s != "*" && s != "/") return stoi(s);
