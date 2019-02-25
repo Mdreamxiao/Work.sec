@@ -1,5 +1,355 @@
 //***********************************Leet Recorder***********************************//
 // 1 解法用到的知识点加个备注，以便寻找及总结。  递归
+//***
+
+
+
+
+// ***
+255 Verify Preorder Sequence in Binary Search Tree
+a
+class Solution{
+public:
+    bool verifyPreorder(<vector<int>& preorder){
+        int low = INT_MIN;
+        stack<int> s;
+        for(auto a : preorder)
+        {
+            if(a < low) return false;
+            while(!s.empty() && a > s.top())
+            {
+                low = s.top();s.pop();
+            }
+            s.push(a);
+        }
+        return true;
+    }
+};
+
+b
+class Solution{
+public:
+    bool verifyPreorder(vector<int>& preorder){
+        int low = INT_MIN,i = -1;
+        for(auto a : preorder){
+            if(a < low) return false;
+            while(i >= 0 && a > preorder[i]){
+                low = preorder[i--];
+            }
+            preorder[++i] = a;
+        }
+        return true;
+    }
+};
+
+
+
+687 Longest Univalue Path
+class Solution{
+public:
+	int longestUnivaluePath(TreeNode* root){
+		if(!root) return 0;
+		int res = 0;
+		helper(root,root,res);
+		return res;
+	}
+	int helper(TreeNode* node,TreeNode* parent,int& res){
+		if(!node) return 0;
+		int left = helper(node->left,node,res);
+		int right = helper(node->right,node,res);
+		left = (node->left && node->val == node->left->val)? left+1:0;
+		right = (node->right && node->val == node->right->val)? right+1:0;
+		res = max(res,left+right);
+		return max(left,right);
+	}
+};
+
+// ***
+677 Map Sum Pairs
+a
+class Solution{
+public:
+    void insert(string key,int val)
+    {
+        int diff = val -m[key].first,n = key.size();
+        m[key].first = val;
+        for(int i=n-1;i > 0;--i)
+        {
+            m[key.substr(0,i)].second += diff;
+        }
+    }
+
+    int sum(string prefix){
+        return m[prefix].first + m[prefix].second;
+    }
+
+private:
+    unordered_map<string,pari<int,int>> m;
+};
+
+b 
+class MapSum{
+public:
+    MapSum();
+    void insert(string key,int val){
+        m[key] = val;
+    }
+
+    int sum(string prefix){
+        int res = 0,n = prefix.size();
+        for(auto it=m.lower_bound(prefix);it != m.end();++it){
+            if(it->first.substr(0,n) != prefix) break;
+            res += it->second;
+        }
+        return res;
+    }
+private:
+    map<string,int>m;
+};
+
+
+684 Redundant Connection(graph)
+a
+
+
+536 Construct Binary Tree from String
+a
+calss Solution{
+public:
+    TreeNode* str2tree(string s){
+        if(s.empty()) return NULL;
+        auto found = s.find('(');
+        int val = (found == string::npos)?stoi(s):stoi(s.substr(0,found));
+        TreeNode* cur = new TreeNode(val);
+        if(found == string::npos) return cur;
+        int start = found,cnt = 0;
+        for(int i=start;i< s.size();++i)
+        {
+            if(s[i] == '(')
+                cnt++;
+            else if(s[i] == ')')
+                cnt--;
+
+            if(cnt==0 && start == found)
+            {
+                cur -> left = str2tree(s.sbustr(start+1,i-start-1));
+                start = i+1;
+            }
+            else if(cnt == 0)
+                cur -> right = str2tree(s.sbustr(start+1,i-start-1));
+        }
+        return cur;
+    }
+};
+
+
+
+345. Reverse Vowels of a string
+a
+class Solution{
+public:
+    string reverseVowels(string s)
+    {
+        int left = 0,right = s.size()-1;
+
+        while(left < right)
+        {
+            if(isVowels(s[left]) && isVowels(s[right]))
+                swap(s[left++],s[right--]);
+            else if(isVowels(s[left]))
+                right--;
+            else
+                left++;
+        }
+        return s;
+    }
+private:
+    bool isVowels(char c)
+    {
+        return c=='a'||c=='A'||c=='e'||c=='E'||c=='i'||c=='I'||c=='o'||c=='O'||c=='u'||c=='U';
+    }
+};
+
+
+344 Reverse string
+a
+class Solution{
+public:
+    string reverseString(string s)
+    {
+        int left = 0,right = s.size()-1;
+        while(left < right)
+            swap(s[left++],s[right--]);
+        return s;
+    }
+};
+
+
+125 Valid Palindrome
+a
+class Solution{
+public:
+    bool isPalindrome(string s){
+        int left = 0,right = s.size()-1;
+
+        while(left < right)
+        {
+            if(!isalnum(s[left])) ++left;
+            else if(!isalnum(s[right])) --right;
+            else if((s[left] + 32 - 'a')%32 != (s[right] + 32 - 'a') %32) return false;
+            else
+            {
+                ++left;--right;
+            }
+        }
+        return true;
+    }
+};
+
+
+28 Inplement strStr()
+class Solution{
+public:
+    int strStr(string haystack,string needle){
+// **   if(needle.empty())
+            return 0;
+        int len1 = haystack.size(), len2 = needle.size();
+        if(len1 < len2)
+            return -1;
+
+        for(int i=0;i <= len1-len2;i++)
+        {
+            int j = 0;
+            for(j;j < len2;j++)
+            {
+                if(haystack[i+j] != needle[j])
+                    break;
+            }
+            if(j == len2-1)
+                return i;
+        }
+        return -1;
+    }
+};
+
+
+524 Longeset Word in Dictionary through Deleting
+a
+class Solution{
+public:
+    string findLongestWord(string s,vector<string>& d){
+        sort(d.begin(),d.end(),[](string a,string b){if(a.size() == b.size()) return a<b; return a.size() > b.size();});
+
+        int len = d.size(),len2 = s.size();
+        for(int i=0;i < len;i++)
+        {
+            int k=0;
+            for(int j=0;j < len2;j++)
+                if(k < d[i].size() && s[j]==d[i][k]) ++k;
+            if(k == d[i].size()) return d[i];
+        }
+        return "";
+    }
+};
+
+
+763 Partition Labels
+class Solution{
+public:
+    vector<int> partitionLabels(string S){
+        vector<int> res;
+        int n = S.size(),start = 0,last = 0;
+        unordered_map<char,int> m;
+        for(int i=0;i < n;++i) m[S[i]] = i;
+
+        for(int i=0;i < n;++i)
+        {
+            last = max(last,m[S[i]]);
+            if(i == last)
+            {
+                res.push_back(i-start+1);
+                start = i+1;
+            }
+        }
+        return res;
+    }
+};
+
+
+567 Permutation in String
+a
+class Solution{
+public:
+    bool checkInclusion(string s1,string s2){
+        int n1 = s1.size(),n2 = s2.size();
+        if(n1 > s2)             // 此函数可以不写该判断语句
+            return false;
+        vector<int> m1(128),m2(128);
+        for(int i=0;i < n1;++i){
+            ++m1[s1[i]];++m2[s2[i]];
+        }
+        if(m1 == m2) return true;
+        for(int i=n1;i < n2;++i)
+        {
+            ++m2[s2[i]];
+            --m2[s2[i-n1]];         // 滑窗的右边窗口
+            if(m1 == m2) return true;
+        }
+        return false;
+    }
+};
+
+b 
+class Solution{
+public:
+    bool checkInclusion(string s1,string s2){
+        int n1 = s1.size(),n2 = s2.size(),left = 0;
+        vector<int> m(128);
+        for(int i=0;i < n1;++i) m[s1[i]]++;
+
+        for(int right=0;right < n2;++right)
+        {
+            if(++m[s2[right]] < 0)
+            {
+                while(--m[s2[left++]] != 0)
+                    {};
+            }
+            if(right - left + 1 == n1)
+                return true;
+        }
+        return false;
+    }
+};
+
+
+487 Max Consecutive Ones II
+a
+class Solution{
+public:
+    int findMaxConsecutiveOnes(vector<int>& nums){
+        int res = 0,cur = 0,cnt = 0;
+
+        int len = nums.size();
+        for(int i=0;i < len;i++)
+        {
+            cnt++;
+            if(nums[i] == 0)
+            {
+                cur = cnt;
+                cnt = 0;
+            }
+            res = max(res,cur+cnt);
+        }
+        return res;
+    }
+};
+
+
+
+
+
+
+
 
 147 Insertion Sort List
 Sort a linked list using insertion sort.
